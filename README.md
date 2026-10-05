@@ -15,6 +15,7 @@ python3 tools/baixar-amostras.py     # ou: bash tools/baixar-amostras.sh
 Depois faça commit da pasta `samples/clarinet/`. Assim o app não depende de CDN nenhuma.
 
 ## Recursos
+- **Sem limite de tamanho:** a grade cresce sozinha conforme você rola ou arrasta notas até a borda direita (trava de segurança em 10000 compassos).
 - Alcance D3 a G6 (som real do clarinete em Si♭).
 - Partitura em PDF com transposição: clarinete em Si♭ (+2), Lá (+3), requinta em Mi♭ (−3), clarinete alto em Mi♭ (+9), clarone em Si♭ (+14) ou em dó.
 - Exporta MIDI (programa 72, Clarinete), WAV e JSON; biblioteca de projetos e pasta do dispositivo.
