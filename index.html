@@ -183,7 +183,7 @@
     </div>
     <div class="group"><label for="bpm">BPM</label><input id="bpm" type="number" min="30" max="240" value="100"></div>
     <div class="group"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="1" step="0.01" value="0.8"></div>
-    <div class="group"><label for="meas">Compassos</label><input id="meas" type="number" min="1" max="64" value="4"></div>
+    <div class="group"><label for="meas">Compassos</label><input id="meas" type="number" min="1" max="999" value="4" title="A grade também cresce sozinha quando você escreve perto do fim"></div>
     <div class="group"><label for="len">Nova nota</label>
       <select id="len">
         <option value="last">Última editada</option>
@@ -228,6 +228,7 @@
     <div class="mbody">
       <ul class="how">
         <li><b>Criar uma nota:</b> clique (ou toque) numa célula vazia da grade. No computador, arraste para o lado para já definir a duração.</li>
+        <li><b>Sem limite:</b> a grade cresce sozinha quando você escreve perto do fim. Para ir além, role para a direita. Também dá para definir os compassos em ⚙ Ajustes (até 999).</li>
         <li><b>Mover:</b> arraste a nota. Para cima ou para baixo muda o tom, para os lados muda o tempo. No celular, segure a nota por meio segundo até vibrar e então arraste.</li>
         <li><b>Rolar a grade:</b> arraste o dedo em qualquer lugar da grade, inclusive sobre as notas. A barra de cima fica sempre visível.</li>
         <li><b>Duração livre:</b> arraste a alça na borda direita da nota. Vale qualquer tamanho, como a colcheia pontuada (3 passos de 1/16).</li>
@@ -322,6 +323,7 @@
   const LOW = 50, HIGH = 89;          // D3 .. F6 (alcance do clarinete em Si♭, em som real)
   const CELL = 28;                    // largura de 1 passo (1/16 de compasso)
   const ROWH = 22;                    // altura de cada linha de tom
+  const MAX_MEAS = 999;               // limite de compassos (a grade cresce sozinha até aqui)
   const MIN_D = 0.25;                 // menor duração possível (1/64)
   const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   const BLACK = new Set([1,3,6,8,10]);
@@ -349,7 +351,24 @@
   let projName = 'Sem título';
   let current = null;                 // {kind:'library', id} | {kind:'folder', file}
 
-  const steps = () => Math.max(1, Math.min(64, +$('meas').value || 4)) * 16;
+  const steps = () => Math.max(1, Math.min(MAX_MEAS, +$('meas').value || 4)) * 16;
+  const contentEnd = () => notes.length ? Math.max(...notes.map(n => n.s + n.d)) : 0;   // fim da última nota (em passos)
+  // aumenta a largura da grade sem reconstruir (não interrompe arrasto)
+  function resizeGrid(){
+    const width = steps() * CELL;
+    $('grid').style.width = (54 + width) + 'px';
+    $('layer').style.width = width + 'px';
+    document.querySelectorAll('#rows .cells').forEach(c => { c.style.width = width + 'px'; });
+  }
+  // mantém sempre pelo menos 1 compasso vazio depois da última nota: edição sem fim
+  function ensureRoom(){
+    if(!notes.length) return false;
+    const total = steps(), last = contentEnd(), cur = Math.max(1, +$('meas').value || 4);
+    if(last <= total - 16 || cur >= MAX_MEAS) return false;
+    $('meas').value = Math.min(MAX_MEAS, Math.max(cur + 4, Math.ceil(last / 16) + 4));
+    resizeGrid();
+    return true;
+  }
   const stepSec = () => 60 / (Math.max(30, Math.min(240, +$('bpm').value || 100))) / 4;
 
   function setStatus(t, ok){ const s = $('status'); s.textContent = t; s.className = ok ? 'ok' : ''; }
@@ -566,7 +585,8 @@
     $('playhead').style.display = 'block';
     $('play').classList.add('active');
     clearTimeout(endTimer);
-    endTimer = setTimeout(() => { if(playing){ stop(); } }, ((total - startStep) * ss + 0.6) * 1000);
+    const stopAt = Math.min(total, Math.max(contentEnd(), startStep + 1));
+    endTimer = setTimeout(() => { if(playing){ stop(); } }, ((stopAt - startStep) * ss + 0.6) * 1000);
     cancelAnimationFrame(raf); tick();
   }
   function tick(){
@@ -681,6 +701,7 @@
     if(d < MIN_D) return;
     const n = {p, s, d};
     notes.push(n);
+    ensureRoom();
     const el = addNoteEl(n);
     select(el);
     previewNote(p);
@@ -759,6 +780,7 @@
       const end = snapTo(drag.s0 + drag.d0 + dx / CELL, free);
       n.d = clamp(end - n.s, Math.min(minD, total - n.s), total - n.s);
     }
+    ensureRoom();
     place(drag.el, n);
     showTip(e, n);
   });
@@ -1110,8 +1132,9 @@
   }
 
   // fatia a melodia em segmentos onde o conjunto de notas soando não muda
+  const scoreSteps = () => notes.length ? clamp(Math.ceil(contentEnd() / 16), 1, MAX_MEAS) * 16 : steps();   // sem compassos vazios no fim
   function scoreSegments(){
-    const total = steps() * 2;                               // 1 passo = 2 fusas
+    const total = scoreSteps() * 2;                          // 1 passo = 2 fusas
     const items = notes.map(n => {
       let u = Math.round(n.s * 2), e = Math.round((n.s + n.d) * 2);
       u = clamp(u, 0, total - 1); e = clamp(e, u + 1, total);
@@ -1148,7 +1171,7 @@
     if(!VF) throw new Error('vexflow');
     const {Renderer, Stave, StaveNote, Voice, Formatter, Accidental, Beam, Dot, StaveTie, Barline} = VF;
     const semis = TRANSPOSE[opts.mode] || 0;
-    const nMeas = steps() / 16;
+    const nMeas = scoreSteps() / 16;
 
     // 1) peças (notas/acordes/pausas) já divididas em valores de figura padrão
     const measures = Array.from({length:nMeas}, () => []);
@@ -1451,7 +1474,12 @@
   $('stop').onclick = stop;
   $('vol').oninput = () => { if(engine) engine.setVolume(+$('vol').value); };
   $('bpm').onchange = () => { if(playing){ const p = posStep; stopSound(); posStep = p; play(); } };
-  $('meas').onchange = () => { stop(); build(); };
+  $('meas').onchange = () => {
+    const need = Math.max(1, Math.ceil(contentEnd() / 16));
+    let v = Math.round(+$('meas').value) || 4;
+    $('meas').value = clamp(Math.max(v, need), 1, MAX_MEAS);   // não deixa cortar notas existentes
+    stop(); build();
+  };
   $('clear').onclick = () => { if(!notes.length || confirm('Apagar todas as notas?')){ notes = []; sel = null; renderNotes(); } };
   $('exJson').onclick = () => download(safeName(projName) + '.clarinetcraft.json', new Blob([JSON.stringify(snapshot(), null, 2)], {type:'application/json'}));
   $('imJson').onclick = () => $('file').click();
@@ -1502,13 +1530,13 @@
       while(pitch < LOW) pitch += 12;
       return {p:pitch, s:q(r.t0 / tps), d:Math.max(MIN_D, q((r.t1 - r.t0) / tps))};
     });
-    const maxSteps = 64 * 16;
+    const maxSteps = MAX_MEAS * 16;
     const cut = out.filter(n => n.s < maxSteps).length < out.length;
     out = out.filter(n => n.s < maxSteps).map(n => ({p:n.p, s:n.s, d:Math.min(n.d, maxSteps - n.s)}));
     const last = Math.max(...out.map(n => n.s + n.d));
     return {
       bpm: clamp(Math.round(60000000 / (mpq || 500000)), 30, 240),
-      measures: clamp(Math.ceil(last / 16), 1, 64),
+      measures: clamp(Math.ceil(last / 16) + 4, 1, MAX_MEAS),   // + folga para continuar editando
       notes: out, cut
     };
   }
@@ -1521,7 +1549,7 @@
         const m = parseMidi(buf);
         apply({name:f.name.replace(/\.[^.]+$/, ''), bpm:m.bpm, measures:m.measures, notes:m.notes});
         current = null; updateName();
-        setStatus(m.cut ? 'MIDI importado (cortado em 64 compassos)' : 'MIDI importado', true);
+        setStatus(m.cut ? 'MIDI importado (cortado em ' + MAX_MEAS + ' compassos)' : 'MIDI importado', true);
       }else{
         apply(JSON.parse(new TextDecoder().decode(buf)));
         current = null; updateName();
@@ -1551,7 +1579,7 @@
       case 'ArrowUp':    sel.p = clamp(sel.p + (e.shiftKey ? 12 : 1), LOW, HIGH); previewNote(sel.p, 0.3); renderNotes(); break;
       case 'ArrowDown':  sel.p = clamp(sel.p - (e.shiftKey ? 12 : 1), LOW, HIGH); previewNote(sel.p, 0.3); renderNotes(); break;
       case 'ArrowLeft':  sel.s = clamp(sel.s - (snapStep() || MIN_D), 0, total - sel.d); renderNotes(); break;
-      case 'ArrowRight': sel.s = clamp(sel.s + (snapStep() || MIN_D), 0, total - sel.d); renderNotes(); break;
+      case 'ArrowRight': sel.s = clamp(sel.s + (snapStep() || MIN_D), 0, total - sel.d); ensureRoom(); renderNotes(); break;
       case 'Escape': select(null); break;
       default: handled = false;
     }
