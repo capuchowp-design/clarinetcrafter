@@ -1,28 +1,37 @@
-# Clarinetcrafter
+# Clarinetcraft
 
-Editor de partituras no navegador (PWA) com **som real de clarinete**: sem síntese, só gravações.
-Baseado no projeto Saxcrafter, com interface, ícones, alcance, transposições e motor de som adaptados.
+Editor de partituras (piano-roll) com **som real de clarinete**, adaptado do projeto Saxcrafter.
+Funciona no navegador, como PWA instalável, e exporta PDF (partitura), MIDI, WAV e JSON.
 
-## Como o som funciona
-- 11 gravações reais de clarinete (D3 a F#6). As notas intermediárias são obtidas alterando a velocidade de reprodução em até 2 semitons.
-- Notas longas usam um trecho de sustentação em loop, calculado automaticamente no navegador (sincronizado com o período da nota, com crossfade).
-- As gravações vêm de `samples/clarinet/` se existirem; caso contrário são baixadas da CDN na primeira abertura e guardadas para uso offline (service worker).
+## Importante: coloque as gravações do clarinete
 
-### Recomendado: guardar as gravações no seu repositório
-```bash
-python3 tools/baixar-amostras.py     # ou: bash tools/baixar-amostras.sh
-```
-Depois faça commit da pasta `samples/clarinet/`. Assim o app não depende de CDN nenhuma.
+O app usa **gravações reais** (nenhum som sintético). Elas vêm da biblioteca
+[tonejs-instruments](https://github.com/nbrosowsky/tonejs-instruments) (pasta `samples/clarinet`).
 
-## Recursos
-- **Sem limite de tamanho:** a grade cresce sozinha conforme você rola ou arrasta notas até a borda direita (trava de segurança em 10000 compassos).
-- Alcance D3 a G6 (som real do clarinete em Si♭).
-- Partitura em PDF com transposição: clarinete em Si♭ (+2), Lá (+3), requinta em Mi♭ (−3), clarinete alto em Mi♭ (+9), clarone em Si♭ (+14) ou em dó.
-- Exporta MIDI (programa 72, Clarinete), WAV e JSON; biblioteca de projetos e pasta do dispositivo.
+1. **Recomendado (funciona offline):** rode uma vez `./baixar-samples.sh` (Mac/Linux) ou
+   `baixar-samples.bat` (Windows). Isso cria `samples/clarinet/` com 11 arquivos `.mp3`
+   (D3, F3, As3, D4, F4, As4, D5, F5, As5, D6, Fs6). Depois faça commit dessa pasta no GitHub.
+2. Se a pasta não existir, o app tenta buscar as mesmas gravações pelo CDN jsDelivr
+   (precisa de internet na primeira vez; o service worker guarda para uso offline).
 
-## Publicar no GitHub Pages
-Envie todos os arquivos da raiz (`index.html`, `sw.js`, `manifest.json`, ícones e a pasta `samples/`) e ative Settings → Pages.
+O app acha a gravação mais próxima de cada nota e a ajusta de tom; o trecho sustentado entra em loop
+(com ponto de loop calculado automaticamente) para notas longas.
 
-## Créditos e licenças
-- Gravações: **tonejs-instruments**, de N. P. Brosowsky (https://github.com/nbrosowsky/tonejs-instruments), licença **CC BY 3.0**. As fontes originais de cada gravação estão no arquivo `sample-source-info.txt` desse repositório. Se publicar o app, mantenha esta atribuição.
-- Notação: VexFlow 4.2.5 (carregado de CDN).
+## O que mudou em relação ao Saxcrafter
+
+- Som: clarinete real (carregado de `samples/clarinet`), no lugar de `sax-samples.js`.
+- Grade: Ré3 a Fá6 (alcance real do clarinete em Si♭, em som real).
+- Partitura: clarinete em Si♭, Lá, Mi♭, clarone ou em dó (transposição automática).
+- MIDI exportado usa o programa GM 72 (Clarinet).
+- Interface, cores (prata/azul-aço), ícone do app e textos adaptados ao clarinete.
+
+## Publicar (GitHub Pages)
+
+Envie todos os arquivos para a raiz do repositório e ative Pages. É preciso HTTPS para instalar como app.
+
+## Créditos e licença das gravações
+
+Gravações de clarinete: biblioteca tonejs-instruments (N. P. Brosowsky), licença **CC-BY 3.0**.
+É exigida atribuição: mantenha este crédito. As fontes originais das amostras estão no arquivo
+`sample-source-info.txt` do repositório da biblioteca.
+Partitura renderizada com [VexFlow](https://github.com/0xfe/vexflow) (carregado via CDN).

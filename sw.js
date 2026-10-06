@@ -1,6 +1,6 @@
-const CACHE = 'clarinetcrafter-v1';
-const SAMPLES = ['D3','F3','As3','D4','F4','As4','D5','F5','As5','D6','Fs6'].map(n => './samples/clarinet/' + n + '.mp3');
-const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'].concat(SAMPLES);
+const CACHE = 'clarinetcraft-v1';
+const SAMPLES = ['D3','F3','As3','D4','F4','As4','D5','F5','As5','D6','Fs6'].flatMap(n => ['mp3','ogg'].map(e => './samples/clarinet/' + n + '.' + e));
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', ...SAMPLES];
 
 // Instala sem falhar se algum arquivo estiver ausente (cada um é guardado separadamente).
 self.addEventListener('install', e => {
@@ -17,7 +17,7 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
-// Rede primeiro; se estiver offline, usa o que já foi guardado (inclusive as gravações do clarinete e a biblioteca de partitura).
+// Rede primeiro; se estiver offline, usa o que já foi guardado (gravações do clarinete e biblioteca de partitura inclusas).
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(

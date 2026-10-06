@@ -1,7 +1,7 @@
 {
-  "id": "clarinetcrafter-app",
-  "name": "Clarinetcrafter",
-  "short_name": "Clarinetcrafter",
+  "id": "clarinetcraft-app",
+  "name": "Clarinetcraft",
+  "short_name": "Clarinetcraft",
   "description": "Editor de partituras com som real de clarinete",
   "lang": "pt-BR",
   "dir": "ltr",
@@ -9,8 +9,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#080b10",
-  "theme_color": "#080b10",
+  "background_color": "#0b0e12",
+  "theme_color": "#0b0e12",
   "categories": ["music", "productivity"],
   "prefer_related_applications": false,
   "icons": [

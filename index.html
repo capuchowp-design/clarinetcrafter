@@ -3,24 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Clarinetcrafter</title>
-<meta name="theme-color" content="#080b10">
+<title>Clarinetcraft</title>
+<meta name="theme-color" content="#0b0e12">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Clarinetcrafter">
+<meta name="apple-mobile-web-app-title" content="Clarinetcraft">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root{
-    --bg:#080b10; --panel:#0f141b; --panel2:#171e28; --line:#27313e;
-    --gold:#c9d3de; --amber:#8fd3e6; --brass:#5f8296; --text:#e4ebf2; --muted:#8393a4;
-    --black-key:#0a0e13; --white-key:#121820; --c-row:#1c2530;
+    --bg:#0b0e12; --panel:#12171d; --panel2:#1a212a; --line:#2b3643;
+    --gold:#b8c4d1; --amber:#8fd0ff; --brass:#5d7a99; --text:#e3e9f0; --muted:#8795a6;
+    --black-key:#0d1116; --white-key:#141a21; --c-row:#202a36;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  body{height:100vh;height:100dvh;display:flex;flex-direction:column;background:radial-gradient(1200px 500px at 50% -10%,#16212e 0%,var(--bg) 60%)}
+  body{height:100vh;height:100dvh;display:flex;flex-direction:column;background:radial-gradient(1200px 500px at 50% -10%,#18222d 0%,var(--bg) 60%)}
   header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
   header svg{width:34px;height:34px;flex:none}
   h1{font-size:20px;margin:0;letter-spacing:.5px;color:var(--gold);font-weight:700}
@@ -38,7 +38,7 @@
   input[type=text]{cursor:text}
   button:hover,select:hover{border-color:var(--brass)}
   button:disabled{opacity:.45;cursor:default}
-  button.primary{background:linear-gradient(180deg,var(--amber),var(--gold));color:#051017;border-color:var(--gold);font-weight:700}
+  button.primary{background:linear-gradient(180deg,var(--amber),var(--gold));color:#06121c;border-color:var(--gold);font-weight:700}
   button.primary:hover{filter:brightness(1.08)}
   button.active{border-color:var(--amber);color:var(--amber)}
   button.gold{border-color:var(--gold);color:var(--amber)}
@@ -54,8 +54,8 @@
   .row{display:flex;height:22px}
   .lab{position:sticky;left:0;z-index:5;width:54px;flex:none;font-size:11px;line-height:22px;padding-left:8px;
        color:var(--muted);border-right:1px solid var(--line);border-bottom:1px solid #00000040;cursor:pointer}
-  .lab.white{background:#18202a}
-  .lab.black{background:#080b0f;color:#56677a}
+  .lab.white{background:#19202a}
+  .lab.black{background:#090c10;color:#55626f}
   .lab.c{color:var(--gold);font-weight:700}
   .cells{position:relative;flex:none;border-bottom:1px solid #00000040;cursor:cell;touch-action:pan-x pan-y}
   .cells.white{background-color:var(--white-key)}
@@ -65,21 +65,21 @@
   /* camada das notas: acima da grade, só as notas recebem o mouse/toque */
   #layer{position:absolute;left:54px;top:0;pointer-events:none;z-index:2}
   .note{position:absolute;height:18px;border-radius:5px;pointer-events:auto;cursor:grab;touch-action:pan-x pan-y;-webkit-touch-callout:none;
-        background:linear-gradient(180deg,var(--amber),var(--brass));border:1px solid #d9f4fb;
-        box-shadow:0 0 8px #8fd3e655;overflow:hidden;display:flex;align-items:center}
+        background:linear-gradient(180deg,var(--amber),var(--brass));border:1px solid #cfe9ff;
+        box-shadow:0 0 8px #8fd0ff55;overflow:hidden;display:flex;align-items:center}
   .note:hover{filter:brightness(1.12)}
-  .note .nm{font-size:10px;font-weight:700;color:#071218;padding-left:5px;pointer-events:none;white-space:nowrap}
+  .note .nm{font-size:10px;font-weight:700;color:#06121c;padding-left:5px;pointer-events:none;white-space:nowrap}
   .note .grip{position:absolute;right:0;top:0;bottom:0;width:10px;max-width:42%;cursor:ew-resize;touch-action:none;
         background:linear-gradient(90deg,transparent,#00000050);border-left:1px solid #00000030}
-  .note .grip::after{content:"";position:absolute;right:3px;top:5px;bottom:5px;width:2px;border-radius:1px;background:#071218aa}
-  .note.sel{outline:2px solid #e8fbff;outline-offset:1px;z-index:3}
-  .note.drag{cursor:grabbing;z-index:6;filter:brightness(1.18);box-shadow:0 0 14px #8fd3e6aa}
+  .note .grip::after{content:"";position:absolute;right:3px;top:5px;bottom:5px;width:2px;border-radius:1px;background:#06121caa}
+  .note.sel{outline:2px solid #e6f4ff;outline-offset:1px;z-index:3}
+  .note.drag{cursor:grabbing;z-index:6;filter:brightness(1.18);box-shadow:0 0 14px #8fd0ffaa}
   body.resizing, body.resizing *{cursor:ew-resize !important}
   body.moving, body.moving *{cursor:grabbing !important}
   @media (pointer:coarse){ .note .grip{width:16px} .note{height:20px} }
 
   #playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);box-shadow:0 0 10px var(--amber);z-index:4;pointer-events:none;display:none}
-  #tip{position:fixed;z-index:60;pointer-events:none;display:none;background:#080b10ee;border:1px solid var(--gold);
+  #tip{position:fixed;z-index:60;pointer-events:none;display:none;background:#0b0e12ee;border:1px solid var(--gold);
        color:var(--amber);padding:4px 9px;border-radius:7px;font-size:12px;font-weight:600;white-space:nowrap}
   header,.toolbar{flex:none}
   .adv{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;width:100%;padding-top:10px;border-top:1px solid var(--line);max-height:40vh;max-height:40dvh;overflow:auto;-webkit-overflow-scrolling:touch}
@@ -88,7 +88,7 @@
   ul.how li{margin-bottom:8px}
   ul.how b{color:var(--gold)}
   ul.how kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-size:12px;color:var(--text)}
-  #loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#080b10cc;z-index:80;color:var(--gold)}
+  #loading{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#0b0e12cc;z-index:80;color:var(--gold)}
 
   /* janelas (Projetos e Partitura) */
   .modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:50;padding:12px}
@@ -116,7 +116,7 @@
   .opts{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;padding:12px 16px;border-bottom:1px solid var(--line)}
   .opts label{display:flex;flex-direction:column;gap:3px}
   .opts input[type=text]{min-width:210px}
-  #scBody{background:#1b2330}
+  #scBody{background:#1d2530}
   .paper{background:#fff;margin:0 auto 16px;max-width:794px;box-shadow:0 4px 18px #0009}
   .paper svg{display:block;width:100%;height:auto}
   .msg{color:var(--text);padding:30px 10px;text-align:center;font-size:14px}
@@ -140,16 +140,18 @@
 
 <header>
   <svg viewBox="0 0 64 64" aria-hidden="true">
-    <g transform="rotate(35 32 32)">
-      <rect x="29" y="2" width="6" height="9" rx="1.5" fill="#c9d3de"/>
-      <rect x="28" y="10" width="8" height="3" rx="1" fill="#8fd3e6"/>
-      <rect x="28.5" y="13" width="7" height="30" fill="#161c24" stroke="#c9d3de" stroke-width="0.8"/>
-      <rect x="27.5" y="22" width="9" height="2" fill="#c9d3de"/><rect x="27.5" y="33" width="9" height="2" fill="#c9d3de"/>
-      <path d="M28.5 43h7l4 17h-15z" fill="#161c24" stroke="#c9d3de" stroke-width="0.8" stroke-linejoin="round"/>
-      <circle cx="32" cy="18" r="1.7" fill="#8fd3e6"/><circle cx="32" cy="28" r="1.7" fill="#8fd3e6"/><circle cx="32" cy="38" r="1.7" fill="#8fd3e6"/>
+    <g transform="rotate(32 32 32)">
+      <path d="M30 2h4l1 7h-6z" fill="#b8c4d1"/>
+      <rect x="28.2" y="8" width="7.6" height="42" rx="1.6" fill="#232e3c" stroke="#b8c4d1" stroke-width="1.6"/>
+      <path d="M28.2 49h7.6l4.4 11h-16.4z" fill="#232e3c" stroke="#b8c4d1" stroke-width="1.6" stroke-linejoin="round"/>
+      <rect x="27.4" y="12" width="9.2" height="2.4" rx="1" fill="#b8c4d1"/>
+      <circle cx="32" cy="21" r="2.1" fill="#8fd0ff"/><circle cx="32" cy="28" r="2.1" fill="#8fd0ff"/>
+      <circle cx="32" cy="35" r="2.1" fill="#8fd0ff"/><circle cx="32" cy="42" r="2.1" fill="#8fd0ff"/>
+      <rect x="36.6" y="24.5" width="4.4" height="2.2" rx="1.1" fill="#b8c4d1"/>
+      <rect x="23.2" y="31.5" width="4.4" height="2.2" rx="1.1" fill="#b8c4d1"/>
     </g>
   </svg>
-  <h1>Clarinetcrafter<small>Editor de partituras com clarinete real</small></h1>
+  <h1>Clarinetcraft<small>Editor de partituras com clarinete real</small></h1>
   <div id="pname" title="Abrir projetos">Projeto: <b>Sem título</b></div>
 </header>
 
@@ -169,19 +171,19 @@
     <button id="adjBtn" title="Ajustes e exportação" aria-label="Ajustes">⚙<span class="lbl"> Ajustes</span></button>
     <button id="helpBtn" title="Como usar" aria-label="Como usar">❓<span class="lbl"> Ajuda</span></button>
   </div>
-  <div id="status">Carregando o clarinete…</div>
+  <div id="status">Preparando o clarinete…</div>
 
   <div class="adv" id="adv">
     <div class="group"><label for="vib">Vibrato</label>
       <select id="vib">
-        <option value="0" selected>Nenhum</option>
-        <option value="9">Suave</option>
+        <option value="0">Nenhum</option>
+        <option value="9" selected>Suave</option>
         <option value="18">Médio</option>
       </select>
     </div>
     <div class="group"><label for="bpm">BPM</label><input id="bpm" type="number" min="30" max="240" value="100"></div>
     <div class="group"><label for="vol">Volume</label><input id="vol" type="range" min="0" max="1" step="0.01" value="0.8"></div>
-    <div class="group"><label for="meas" title="Cresce sozinho conforme você compõe">Compassos</label><input id="meas" type="number" min="1" max="10000" value="4" title="Cresce sozinho conforme você compõe"></div>
+    <div class="group"><label for="meas">Compassos</label><input id="meas" type="number" min="1" max="64" value="4"></div>
     <div class="group"><label for="len">Nova nota</label>
       <select id="len">
         <option value="last">Última editada</option>
@@ -228,7 +230,6 @@
         <li><b>Criar uma nota:</b> clique (ou toque) numa célula vazia da grade. No computador, arraste para o lado para já definir a duração.</li>
         <li><b>Mover:</b> arraste a nota. Para cima ou para baixo muda o tom, para os lados muda o tempo. No celular, segure a nota por meio segundo até vibrar e então arraste.</li>
         <li><b>Rolar a grade:</b> arraste o dedo em qualquer lugar da grade, inclusive sobre as notas. A barra de cima fica sempre visível.</li>
-        <li><b>Sem limite de tamanho:</b> a grade cresce sozinha. Ao rolar ou arrastar uma nota até a borda direita, entram mais compassos. O campo <b>Compassos</b> em ⚙ Ajustes só mostra o tamanho atual.</li>
         <li><b>Duração livre:</b> arraste a alça na borda direita da nota. Vale qualquer tamanho, como a colcheia pontuada (3 passos de 1/16).</li>
         <li><b>Remover:</b> toque duas vezes na nota (no computador: duplo clique, botão direito ou <kbd>Delete</kbd>).</li>
         <li><b>Ouvir um tom:</b> toque no nome da nota na coluna da esquerda.</li>
@@ -236,7 +237,7 @@
         <li><b>Ímã:</b> em ⚙ Ajustes, define o alinhamento ao arrastar. No computador, segure <kbd>Shift</kbd> para ignorá-lo.</li>
         <li><b>Teclado (computador):</b> <kbd>Espaço</kbd> toca e pausa. Com uma nota selecionada, <kbd>↑</kbd><kbd>↓</kbd> mudam o tom (<kbd>Shift</kbd> = oitava) e <kbd>←</kbd><kbd>→</kbd> movem no tempo. <kbd>Ctrl</kbd>+<kbd>S</kbd> salva.</li>
         <li><b>Salvar e exportar:</b> 📁 Projetos guarda na biblioteca ou numa pasta, 🎼 Partitura gera o PDF, e em ⚙ Ajustes ficam MIDI, WAV, JSON e Importar.</li>
-        <li><b>Som:</b> gravações reais de um clarinete (biblioteca tonejs-instruments, licença CC BY 3.0), sem síntese. Em ⚙ Ajustes, o <b>Vibrato</b> é opcional (no clarinete costuma ficar desligado). Na partitura você escolhe a afinação: clarinete em Si♭, Lá, Mi♭, clarinete alto, clarone ou em dó.</li>
+        <li><b>Som:</b> gravações reais de um clarinete (biblioteca tonejs-instruments, licença CC-BY 3.0), sem sons sintéticos. Em ⚙ Ajustes, o <b>Vibrato</b> dá vida às notas longas. A grade mostra o <b>som real</b> (de Ré3 a Fá6); na partitura você escolhe se ela é escrita para clarinete em Si♭ (o mais comum), em Lá, em Mi♭, clarone ou em dó.</li>
         <li><b>Instalar no celular:</b> no menu do navegador, escolha "Instalar aplicativo" ou "Adicionar à tela inicial".</li>
       </ul>
       <div class="sec" style="margin-top:16px">
@@ -291,11 +292,10 @@
       <label>Título <input type="text" id="scTitle" maxlength="60" placeholder="Título da música"></label>
       <label>Escrita para
         <select id="scMode">
-          <option value="clarinet_bb">Clarinete em Si♭</option>
-          <option value="clarinet_a">Clarinete em Lá</option>
-          <option value="clarinet_eb">Requinta em Mi♭</option>
-          <option value="alto_clarinet">Clarinete alto (Mi♭)</option>
-          <option value="bass_clarinet">Clarone / clarinete baixo (Si♭)</option>
+          <option value="bb_clarinet">Clarinete em Si♭</option>
+          <option value="a_clarinet">Clarinete em Lá</option>
+          <option value="eb_clarinet">Clarinete em Mi♭ (requinta)</option>
+          <option value="bass_clarinet">Clarone em Si♭</option>
           <option value="concert">Em dó (som real)</option>
         </select>
       </label>
@@ -319,7 +319,7 @@
 <script>
 (() => {
   'use strict';
-  const LOW = 50, HIGH = 91;          // D3 .. G6 (alcance do clarinete em Si♭, som real)
+  const LOW = 50, HIGH = 89;          // D3 .. F6 (alcance do clarinete em Si♭, em som real)
   const CELL = 28;                    // largura de 1 passo (1/16 de compasso)
   const ROWH = 22;                    // altura de cada linha de tom
   const MIN_D = 0.25;                 // menor duração possível (1/64)
@@ -349,29 +349,7 @@
   let projName = 'Sem título';
   let current = null;                 // {kind:'library', id} | {kind:'folder', file}
 
-  /* comprimento da composição: cresce sozinho (sem limite prático; 10000 compassos é só uma trava de segurança) */
-  const MAX_MEAS = 10000;
-  let lenMeas = 4, playEnd = 0;
-  const steps = () => lenMeas * 16;
-  const lastEnd = () => notes.reduce((m, n) => Math.max(m, n.s + n.d), 0);
-  const contentMeas = () => Math.max(1, Math.ceil(lastEnd() / 16 - 1e-9));
-  function applyWidth(){
-    const w = steps() * CELL;
-    $('grid').style.width = (54 + w) + 'px';
-    $('layer').style.width = w + 'px';
-    document.querySelectorAll('#rows .cells').forEach(c => { c.style.width = w + 'px'; });
-  }
-  function growTo(m){
-    m = Math.min(MAX_MEAS, Math.ceil(m));
-    if(m <= lenMeas) return false;
-    lenMeas = m; $('meas').value = m; applyWidth();
-    return true;
-  }
-  // mantém sempre espaço livre à direita: ao chegar perto do fim da grade, ela ganha mais compassos
-  function autoExtend(){
-    const w = $('wrap');
-    for(let i = 0; i < 200 && lenMeas < MAX_MEAS && w.scrollWidth - w.clientWidth - w.scrollLeft < 900; i++) growTo(lenMeas + 4);
-  }
+  const steps = () => Math.max(1, Math.min(64, +$('meas').value || 4)) * 16;
   const stepSec = () => 60 / (Math.max(30, Math.min(240, +$('bpm').value || 100))) / 4;
 
   function setStatus(t, ok){ const s = $('status'); s.textContent = t; s.className = ok ? 'ok' : ''; }
@@ -382,99 +360,102 @@
     if(ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
-  /* ---------- clarinete real: sampler próprio com gravações ---------- */
-  // Gravações reais de clarinete (tonejs-instruments, CC BY 3.0). Nota -> [MIDI, nome do arquivo]
-  const SAMPLE_NOTES = [
-    ['D3',50,'D3'], ['F3',53,'F3'], ['A#3',58,'As3'], ['D4',62,'D4'], ['F4',65,'F4'], ['A#4',70,'As4'],
-    ['D5',74,'D5'], ['F5',77,'F5'], ['A#5',82,'As5'], ['D6',86,'D6'], ['F#6',90,'Fs6']
-  ];
-  // Procura primeiro na pasta local (samples/clarinet/) e, se não achar, baixa da CDN uma vez (o app guarda para uso offline).
+  /* ---------- clarinete real: sampler próprio com gravações (samples/clarinet) ---------- */
+  // Gravações reais de clarinete da biblioteca tonejs-instruments (CC-BY 3.0). [nota MIDI, nome do arquivo]
+  const SAMPLE_FILES = [[50,'D3'],[53,'F3'],[58,'As3'],[62,'D4'],[65,'F4'],[70,'As4'],[74,'D5'],[77,'F5'],[82,'As5'],[86,'D6'],[90,'Fs6']];
+  // Primeiro tenta a pasta local (funciona offline); se faltar, busca na internet e o service worker guarda para depois.
   const SAMPLE_BASES = ['samples/clarinet/', 'https://cdn.jsdelivr.net/gh/nbrosowsky/tonejs-instruments@master/samples/clarinet/'];
-  let rawSamples = null;                       // PCM decodificado e com loop pronto (independe do AudioContext)
-  let samplesState = 'idle';                   // idle | loading | ready | error
+  const SAMPLE_EXTS = ['mp3', 'ogg'];
+  let rawSamples = null;                       // PCM decodificado (independe do AudioContext)
   let samplesPromise = null;
 
-  async function fetchSample(file){
-    let lastErr = new Error('sem fonte');
-    for(const ext of ['.mp3', '.ogg']){
-      for(const base of SAMPLE_BASES){
-        try{
-          const r = await fetch(base + file + ext);
-          if(!r.ok) throw new Error('HTTP ' + r.status);
-          return await r.arrayBuffer();
-        }catch(e){ lastErr = e; }
-      }
+  // acha o período da onda (autocorrelação) para fechar o loop sem estalo, em múltiplos exatos do período
+  function findPeriod(d, from, sr){
+    const N = 4096, minLag = Math.floor(sr / 1500), maxLag = Math.floor(sr / 120);
+    from = Math.max(0, Math.min(from, d.length - N - maxLag - 2));
+    const ac = new Float32Array(maxLag + 2);
+    let e0 = 0; for(let i = 0; i < N; i++) e0 += d[from + i] * d[from + i];
+    let best = minLag, bv = -1;
+    for(let lag = minLag; lag <= maxLag + 1; lag++){
+      let sum = 0, e1 = 0;
+      for(let i = 0; i < N; i++){ const a = d[from + i], b = d[from + i + lag]; sum += a * b; e1 += b * b; }
+      ac[lag] = sum / Math.sqrt((e0 * e1) || 1);
     }
-    throw lastErr;
+    // primeiro máximo local alto (evita pegar um sub-múltiplo do período)
+    let gmax = 0; for(let lag = minLag; lag <= maxLag; lag++) if(ac[lag] > gmax) gmax = ac[lag];
+    for(let lag = minLag + 1; lag < maxLag; lag++){
+      if(ac[lag] >= gmax * 0.9 && ac[lag] >= ac[lag - 1] && ac[lag] >= ac[lag + 1]){ best = lag; break; }
+    }
+    const y0 = ac[best - 1], y1 = ac[best], y2 = ac[best + 1], den = (y0 - 2 * y1 + y2);
+    return best + (den ? 0.5 * (y0 - y2) / den : 0);       // interpolação parabólica (sub-amostra)
   }
-  function decodeBytes(bytes){
-    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-    const oc = new OAC(1, 1, 44100);
-    return new Promise((res, rej) => {
-      const p = oc.decodeAudioData(bytes, res, rej);
-      if(p && p.catch) p.catch(rej);
-    });
+  function makeLoop(d, sr){
+    const n = d.length;
+    let target = Math.floor(n * 0.45);
+    let P = 0;
+    try{ P = findPeriod(d, target, sr); }catch(e){ P = 0; }
+    if(!(P > 20)) P = sr / 440;
+    let ls = target;
+    while(ls < n - 1 && !(d[ls - 1] <= 0 && d[ls] > 0)) ls++;       // começa num cruzamento ascendente por zero
+    const k = Math.max(1, Math.round(Math.min(0.5 * sr, n * 0.28) / P));
+    let L = Math.round(k * P), le = ls + L;
+    const limit = Math.floor(n * 0.9);
+    while(le > limit && L > P * 1.5){ L = Math.round((Math.floor(L / P) - 1) * P); le = ls + L; }
+    if(le > limit || L < 64){ ls = Math.floor(n * 0.4); le = Math.floor(n * 0.9); L = le - ls; }
+    // crossfade: o fim do trecho em loop passa a "desembocar" exatamente no início
+    const X = Math.max(32, Math.min(Math.round(sr * 0.03), ls - 1, Math.floor(L / 2)));
+    for(let i = 0; i < X; i++){
+      const w = i / X;
+      d[le - X + i] = d[le - X + i] * (1 - w) + d[ls - X + i] * w;
+    }
+    // nivela o volume entre as gravações (RMS do trecho sustentado)
+    let sum = 0; for(let i = ls; i < le; i++) sum += d[i] * d[i];
+    const rms = Math.sqrt(sum / Math.max(1, le - ls)) || 0.05;
+    return {ls, le, gain: Math.max(0.2, Math.min(6, 0.14 / rms))};
   }
-  // Cria um trecho de sustentação em loop, sincronizado com o período da nota e com crossfade, para notas longas.
-  function prepLoop(data, sr, midi){
-    const n = data.length;
-    let P = sr / (440 * Math.pow(2, (midi - 69) / 12));
-    // refina o período por autocorrelação perto do meio da gravação
-    const mid = Math.floor(n * 0.5), win = Math.floor(P * 6);
-    if(mid + win + Math.ceil(P * 1.06) + 2 < n){
-      const lo = Math.floor(P * 0.94), hi = Math.ceil(P * 1.06), c = [];
-      for(let lag = lo; lag <= hi; lag++){
-        let xy = 0, xx = 0, yy = 0;
-        for(let i = mid; i < mid + win; i++){ const x = data[i], y = data[i + lag]; xy += x * y; xx += x * x; yy += y * y; }
-        c.push(xy / Math.sqrt(xx * yy + 1e-12));
-      }
-      let bi = 0; for(let i = 1; i < c.length; i++) if(c[i] > c[bi]) bi = i;
-      let off = 0;
-      if(bi > 0 && bi < c.length - 1){
-        const d = c[bi - 1] - 2 * c[bi] + c[bi + 1];
-        if(d < 0) off = 0.5 * (c[bi - 1] - c[bi + 1]) / d;
-      }
-      P = lo + bi + off;
+
+  async function fetchAudio(file){
+    for(const base of SAMPLE_BASES) for(const ext of SAMPLE_EXTS){
+      try{
+        const r = await fetch(base + file + '.' + ext);
+        if(r.ok) return await r.arrayBuffer();
+      }catch(e){}
     }
-    const minLen = (n > sr * 0.9 ? 0.35 : 0.12) * sr;
-    const regionStart = Math.floor(n * 0.30), regionEnd = Math.floor(n * 0.82);
-    let k = Math.max(1, Math.ceil(minLen / P)), bestK = k, bestErr = 9;
-    for(let kk = k; kk < k + 40; kk++){ const e = Math.abs(kk * P - Math.round(kk * P)); if(e < bestErr){ bestErr = e; bestK = kk; } }
-    k = bestK;
-    while(k > 1 && regionStart + Math.round(k * P) > regionEnd) k--;
-    const L = Math.round(k * P);
-    let ls = regionStart;                      // começa num cruzamento de zero ascendente
-    for(let i = regionStart; i < regionStart + P && i + 1 < n; i++){ if(data[i] <= 0 && data[i + 1] > 0){ ls = i + 1; break; } }
-    let le = Math.min(n, ls + L);
-    const C = Math.max(8, Math.min(Math.round(Math.max(2 * P, 0.02 * sr)), ls, le - ls));
-    const out = data.slice(0, le);
-    for(let i = 0; i < C; i++){                // crossfade de potência igual: fim do loop -> trecho anterior ao início
-      const w = (i + 1) / C, ga = Math.cos(w * Math.PI / 2), gb = Math.sin(w * Math.PI / 2);
-      out[le - C + i] = data[le - C + i] * ga + data[ls - C + i] * gb;
-    }
-    return {ls, data: out};
+    return null;
+  }
+  function decodeAudio(ab){
+    const Off = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const dc = new Off(1, 1, 44100);
+    return new Promise((res, rej) => { const p = dc.decodeAudioData(ab, res, rej); if(p && p.catch) p.catch(rej); });
   }
   function loadSamples(){
     if(samplesPromise) return samplesPromise;
-    samplesState = 'loading';
+    setStatus('Carregando o clarinete…');
     let done = 0;
-    samplesPromise = Promise.all(SAMPLE_NOTES.map(async ([name, midi, file]) => {
-      const buf = await decodeBytes(await fetchSample(file));
-      const mono = new Float32Array(buf.length), ch = buf.numberOfChannels;
-      for(let c = 0; c < ch; c++){ const d = buf.getChannelData(c); for(let i = 0; i < buf.length; i++) mono[i] += d[i] / ch; }
-      const r = prepLoop(mono, buf.sampleRate, midi);
-      setStatus('Carregando o clarinete… ' + (++done) + '/' + SAMPLE_NOTES.length);
-      return {midi, ls: r.ls, data: r.data, sr: buf.sampleRate};
+    samplesPromise = Promise.all(SAMPLE_FILES.map(async ([midi, file]) => {
+      try{
+        const ab = await fetchAudio(file);
+        if(!ab) return null;
+        const buf = await decodeAudio(ab);
+        const d = new Float32Array(buf.length);
+        for(let c = 0; c < buf.numberOfChannels; c++){
+          const ch = buf.getChannelData(c);
+          for(let i = 0; i < d.length; i++) d[i] += ch[i] / buf.numberOfChannels;
+        }
+        const lp = makeLoop(d, buf.sampleRate);
+        return {midi, sr: buf.sampleRate, data: d, ls: lp.ls, le: lp.le, gain: lp.gain};
+      }catch(e){ console.error('amostra', file, e); return null; }
+      finally{ done++; if(done < SAMPLE_FILES.length) setStatus('Carregando o clarinete… ' + done + '/' + SAMPLE_FILES.length); }
     })).then(list => {
-      rawSamples = list.sort((x, y) => x.midi - y.midi);
-      samplesState = 'ready';
-      setStatus('Clarinete real pronto', true);
+      const ok = list.filter(Boolean).sort((a, b) => a.midi - b.midi);
+      if(ok.length >= 2){
+        rawSamples = ok;
+        setStatus(ok.length === SAMPLE_FILES.length ? 'Clarinete real pronto' : 'Clarinete pronto (' + ok.length + ' de ' + SAMPLE_FILES.length + ' gravações)', true);
+      }else{
+        samplesPromise = null;
+        setStatus('Faltam as gravações do clarinete: veja o README (pasta samples/clarinet)');
+      }
       return rawSamples;
-    }).catch(e => {
-      console.error(e);
-      samplesState = 'error'; samplesPromise = null;
-      setStatus('Não foi possível carregar as gravações do clarinete. Verifique a conexão ou a pasta samples/clarinet');
-      throw e;
     });
     return samplesPromise;
   }
@@ -495,15 +476,15 @@
       this.c = actx; this.voices = new Set();
       this.bufs = rawSamples.map(s => {
         const b = actx.createBuffer(1, s.data.length, s.sr); b.copyToChannel(s.data, 0);
-        return {midi: s.midi, ls: s.ls / s.sr, buf: b};
+        return {midi: s.midi, ls: s.ls / s.sr, le: s.le / s.sr, gain: s.gain, buf: b};
       });
       this.master = actx.createGain(); this.master.gain.value = vol;
       const comp = actx.createDynamicsCompressor();
       comp.threshold.value = -12; comp.knee.value = 14; comp.ratio.value = 5; comp.attack.value = 0.004; comp.release.value = 0.25;
       this.master.connect(comp); comp.connect(dest);
-      this.bus = actx.createGain(); this.bus.gain.value = 1.1;
-      const dry = actx.createGain(); dry.gain.value = 0.86;
-      const wet = actx.createGain(); wet.gain.value = 0.2;
+      this.bus = actx.createGain(); this.bus.gain.value = 1.2;
+      const dry = actx.createGain(); dry.gain.value = 0.88;
+      const wet = actx.createGain(); wet.gain.value = 0.18;
       const conv = actx.createConvolver(); conv.buffer = makeIR(actx);
       this.bus.connect(dry); dry.connect(this.master);
       this.bus.connect(conv); conv.connect(wet); wet.connect(this.master);
@@ -515,20 +496,20 @@
       for(const b of this.bufs) if(Math.abs(b.midi - midi) < Math.abs(root.midi - midi)) root = b;
       const src = a.createBufferSource();
       src.buffer = root.buf; src.loop = true;
-      src.loopStart = root.ls; src.loopEnd = root.buf.duration;
+      src.loopStart = root.ls; src.loopEnd = root.le;
       src.playbackRate.value = Math.pow(2, (midi - root.midi) / 12);
-      const g = a.createGain(), end = when + Math.max(0.05, dur), A = 0.012, R = 0.12;
+      const g = a.createGain(), end = when + Math.max(0.05, dur), A = 0.015, R = 0.12;
       g.gain.setValueAtTime(0, when);
-      g.gain.linearRampToValueAtTime(1, when + A);
-      g.gain.setValueAtTime(1, Math.max(when + A, end));
+      g.gain.linearRampToValueAtTime(root.gain, when + A);
+      g.gain.setValueAtTime(root.gain, Math.max(when + A, end));
       g.gain.linearRampToValueAtTime(0, end + R);
       src.connect(g); g.connect(this.bus);
       let lfo = null;
-      if(vib > 0 && dur > 0.45){                // vibrato opcional, que entra depois do ataque
+      if(vib > 0 && dur > 0.45){                // vibrato leve que entra depois do ataque
         lfo = a.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 5 + Math.random() * 0.7;
         const lg = a.createGain();
-        lg.gain.setValueAtTime(0, when); lg.gain.setValueAtTime(0, when + 0.28);
-        lg.gain.linearRampToValueAtTime(vib, when + 0.8);
+        lg.gain.setValueAtTime(0, when); lg.gain.setValueAtTime(0, when + 0.35);
+        lg.gain.linearRampToValueAtTime(vib, when + 0.9);
         lfo.connect(lg); lg.connect(src.detune);
         lfo.start(when); lfo.stop(end + R + 0.02);
       }
@@ -548,19 +529,15 @@
   }
   const vibDepth = () => +$('vib').value || 0;
   function getEngine(){
+    if(!rawSamples){ loadSamples(); setStatus(samplesPromise ? 'Carregando o clarinete… tente de novo em instantes' : 'Faltam as gravações do clarinete: veja o README'); return null; }
     ensureCtx();
-    if(samplesState !== 'ready'){
-      if(samplesState !== 'loading') loadSamples().catch(() => {});
-      else setStatus('Carregando o clarinete… aguarde um instante');
-      return null;
-    }
     if(!engine){
       try{ engine = new ClarinetEngine(ctx, ctx.destination, +$('vol').value); }
       catch(e){ console.error(e); setStatus('Não foi possível preparar o som'); return null; }
     }
     return engine;
   }
-  function prepareSamples(){ loadSamples().catch(() => {}); }
+  function prepareSamples(){ loadSamples(); }
 
   function previewNote(m, dur){
     const eng = getEngine();
@@ -570,10 +547,9 @@
 
   function play(){
     const eng = getEngine();
-    if(!eng){ if(samplesPromise) samplesPromise.then(() => { if(!playing) play(); }).catch(() => {}); return; }
+    if(!eng) return;
     stopSound();
-    const total = Math.max(1, lastEnd());
-    playEnd = total;
+    const total = steps();
     if(posStep >= total) posStep = 0;
     startStep = posStep;
     const t0 = ctx.currentTime + 0.08;
@@ -596,7 +572,7 @@
   function tick(){
     if(!playing) return;
     const s = startStep + Math.max(0, ctx.currentTime - startedAt) / stepSec();
-    posStep = Math.min(s, playEnd || steps());
+    posStep = Math.min(s, steps());
     movePlayhead(posStep);
     raf = requestAnimationFrame(tick);
   }
@@ -634,9 +610,9 @@
       cells.style.width = width + 'px';
       // linhas verticais: compasso (forte), tempo (média), passo (fraca)
       cells.style.backgroundImage =
-        `linear-gradient(90deg,#c9d3de55 1px,transparent 1px),` +
-        `linear-gradient(90deg,#c9d3de22 1px,transparent 1px),` +
-        `linear-gradient(90deg,#c9d3de11 1px,transparent 1px)`;
+        `linear-gradient(90deg,#b8c4d155 1px,transparent 1px),` +
+        `linear-gradient(90deg,#b8c4d122 1px,transparent 1px),` +
+        `linear-gradient(90deg,#b8c4d111 1px,transparent 1px)`;
       cells.style.backgroundSize = `${CELL*16}px 100%,${CELL*4}px 100%,${CELL}px 100%`;
       row.append(lab, cells); rows.append(row);
     }
@@ -644,7 +620,6 @@
     layer.style.width = width + 'px';
     layer.style.height = ((HIGH - LOW + 1) * ROWH) + 'px';
     renderNotes();
-    autoExtend();
   }
 
   function place(el, n){
@@ -663,9 +638,10 @@
   }
   function renderNotes(){
     const layer = $('layer'); layer.innerHTML = '';
-    notes = notes.filter(n => n.p >= LOW && n.p <= HIGH);
-    growTo(contentMeas() + 2);                    // sempre sobram 2 compassos vazios depois da última nota
+    const total = steps();
+    notes = notes.filter(n => n.s < total && n.p >= LOW && n.p <= HIGH);
     notes.forEach(n => {
+      n.d = Math.min(n.d, total - n.s);
       const el = addNoteEl(n);
       if(n === sel) el.classList.add('sel');
     });
@@ -701,14 +677,15 @@
     s = Math.max(0, s);
     const total = steps();
     let d = $('len').value === 'last' ? lastD : +$('len').value;
+    d = Math.min(d, total - s);
+    if(d < MIN_D) return;
     const n = {p, s, d};
     notes.push(n);
-    growTo(contentMeas() + 2);
     const el = addNoteEl(n);
     select(el);
     previewNote(p);
     if(startDrag){
-      drag = {mode:'resize', n, el, x0:e.clientX, y0:e.clientY, sl0:$('wrap').scrollLeft, s0:s, p0:p, d0:d, moved:false, id:e.pointerId, created:true};
+      drag = {mode:'resize', n, el, x0:e.clientX, y0:e.clientY, s0:s, p0:p, d0:d, moved:false, id:e.pointerId, created:true};
       el.classList.add('drag');
       document.body.classList.add('resizing');
       showTip(e, n);
@@ -734,7 +711,7 @@
     select(el);
     const resize = e.target.classList.contains('grip');
     const pending = e.pointerType === 'touch' && !resize;      // no toque, mover exige segurar a nota
-    drag = {mode: resize ? 'resize' : 'move', n, el, x0:e.clientX, y0:e.clientY, sl0:$('wrap').scrollLeft, s0:n.s, p0:n.p, d0:n.d, moved:false, id:e.pointerId, created:false,
+    drag = {mode: resize ? 'resize' : 'move', n, el, x0:e.clientX, y0:e.clientY, s0:n.s, p0:n.p, d0:n.d, moved:false, id:e.pointerId, created:false,
             pending, armed: !pending, held:false, timer:0};
     if(pending){
       drag.timer = setTimeout(() => {
@@ -772,21 +749,16 @@
     }
     if(!drag.moved && Math.hypot(dx, dy) < 4) return;
     drag.moved = true;
-    const n = drag.n, free = e.shiftKey, wrapEl = $('wrap');
-    const wr = wrapEl.getBoundingClientRect();
-    if(e.clientX > wr.right - 40) wrapEl.scrollLeft += 24;            // arrastar até a borda direita rola a grade
-    else if(e.clientX < wr.left + 94 && wrapEl.scrollLeft > 0) wrapEl.scrollLeft -= 24;
-    const dxs = dx + (wrapEl.scrollLeft - (drag.sl0 || 0));           // compensa a rolagem durante o arraste
+    const n = drag.n, total = steps(), free = e.shiftKey;
     if(drag.mode === 'move'){
-      n.s = Math.max(0, snapTo(drag.s0 + dxs / CELL, free));
+      n.s = clamp(snapTo(drag.s0 + dx / CELL, free), 0, total - n.d);
       n.p = clamp(drag.p0 - Math.round(dy / ROWH), LOW, HIGH);
       if(n.p !== lastPreviewPitch){ lastPreviewPitch = n.p; previewNote(n.p, 0.3); }
     } else {
       const minD = Math.max(MIN_D, free ? MIN_D : (snapStep() || MIN_D));
-      const end = snapTo(drag.s0 + drag.d0 + dxs / CELL, free);
-      n.d = Math.max(minD, end - n.s);
+      const end = snapTo(drag.s0 + drag.d0 + dx / CELL, free);
+      n.d = clamp(end - n.s, Math.min(minD, total - n.s), total - n.s);
     }
-    growTo(contentMeas() + 2);
     place(drag.el, n);
     showTip(e, n);
   });
@@ -819,7 +791,7 @@
   const snapshot = () => ({v:3, name:projName, bpm:+$('bpm').value, measures:+$('meas').value, score:$('scMode').value, vib:+$('vib').value, vol:+$('vol').value, notes});
   function apply(d){
     if(!d || !Array.isArray(d.notes)) throw new Error('arquivo inválido');
-    $('bpm').value = d.bpm || 100; $('meas').value = d.measures || 4; lenMeas = Math.max(1, Math.min(MAX_MEAS, d.measures || 4)); $('vol').value = d.vol ?? 0.8;
+    $('bpm').value = d.bpm || 100; $('meas').value = d.measures || 4; $('vol').value = d.vol ?? 0.8;
     notes = d.notes.filter(n => Number.isFinite(n.p) && Number.isFinite(n.s) && Number.isFinite(n.d) && n.d > 0);
     sel = null;
     if(typeof d.name === 'string' && d.name.trim()) projName = d.name.trim();
@@ -838,14 +810,14 @@
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
-  const safeName = s => (s || 'clarinetcrafter').replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, ' ').trim().slice(0, 80) || 'clarinetcrafter';
+  const safeName = s => (s || 'clarinetcraft').replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, ' ').trim().slice(0, 80) || 'clarinetcraft';
   const fmtDate = t => { try{ return new Date(t).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'}); }catch(e){ return ''; } };
 
   /* ---------- armazenamento: IndexedDB (biblioteca) ---------- */
   function idb(){
     return new Promise((res, rej) => {
       if(!window.indexedDB){ rej(new Error('sem IndexedDB')); return; }
-      const r = indexedDB.open('clarinetcrafter', 1);
+      const r = indexedDB.open('clarinetcraft', 1);
       r.onupgradeneeded = () => { const db = r.result; db.createObjectStore('projects', {keyPath:'id'}); db.createObjectStore('handles'); };
       r.onsuccess = () => res(r.result);
       r.onerror = () => rej(r.error);
@@ -913,7 +885,7 @@
   /* ---------- armazenamento: pasta do dispositivo (File System Access API) ---------- */
   const FS_OK = typeof window.showDirectoryPicker === 'function';
   let dirHandle = null;
-  const FOLDER_EXT = '.clarinetcrafter.json';
+  const FOLDER_EXT = '.clarinetcraft.json';
 
   async function folderPerm(interactive){
     if(!dirHandle) return false;
@@ -930,7 +902,7 @@
   }
   async function pickFolder(){
     try{
-      const h = await window.showDirectoryPicker({id:'clarinetcrafter', mode:'readwrite'});
+      const h = await window.showDirectoryPicker({id:'clarinetcraft', mode:'readwrite'});
       dirHandle = h;
       try{ await idbOp('handles', 'readwrite', st => st.put(h, 'dir')); }catch(e){}
       await refreshFolder();
@@ -960,7 +932,7 @@
       }
     }catch(e){ ul.append(emptyLi('Não foi possível ler a pasta')); return; }
     items.sort((a, b) => b.mod - a.mod);
-    if(!items.length){ ul.append(emptyLi('Nenhum projeto do Clarinetcrafter nesta pasta ainda')); return; }
+    if(!items.length){ ul.append(emptyLi('Nenhum projeto do Clarinetcraft nesta pasta ainda')); return; }
     items.forEach(it => ul.append(projLi(
       it.name.slice(0, -FOLDER_EXT.length),
       fmtDate(it.mod) + ' · ' + Math.max(1, Math.round(it.size / 1024)) + ' KB',
@@ -1058,7 +1030,7 @@
     });
     ev.sort((a,b) => a[0] - b[0] || a[1] - b[1]);
     const mpq = Math.round(60000000 / (+$('bpm').value || 100));
-    const tr = [0,0xff,0x51,3,(mpq>>16)&255,(mpq>>8)&255,mpq&255, 0,0xc0,71];   // programa 71 = clarinete (GM 72)
+    const tr = [0,0xff,0x51,3,(mpq>>16)&255,(mpq>>8)&255,mpq&255, 0,0xc0,71];   // programa 71 = clarinete (General MIDI nº 72)
     let last = 0;
     ev.forEach(([t, on, p]) => { tr.push(...vlq(t - last), on ? 0x90 : 0x80, p, on ? 90 : 0); last = t; });
     tr.push(0,0xff,0x2f,0);
@@ -1096,15 +1068,16 @@
   }
   async function exportWav(){
     if(!notes.length){ setStatus('Adicione notas antes de exportar'); return; }
+    if(!rawSamples){ await loadSamples(); if(!rawSamples) return; }
     $('loading').style.display = 'flex';
-    try{ await loadSamples(); download(safeName(projName) + '.wav', wavBlob(await renderBuffer())); }
+    try{ download(safeName(projName) + '.wav', wavBlob(await renderBuffer())); }
     catch(e){ console.error(e); setStatus('Não foi possível gerar o WAV'); }
     $('loading').style.display = 'none';
   }
 
   /* ---------- partitura (notação) ---------- */
-  const TRANSPOSE = {clarinet_bb:2, clarinet_a:3, clarinet_eb:-3, alto_clarinet:9, bass_clarinet:14};   // semitons: som -> escrita
-  const INST_LABEL = {clarinet_bb:'Clarinete em Si♭', clarinet_a:'Clarinete em Lá', clarinet_eb:'Requinta em Mi♭', alto_clarinet:'Clarinete alto em Mi♭', bass_clarinet:'Clarone em Si♭', concert:'Clarinete'};
+  const TRANSPOSE = {bb_clarinet:2, a_clarinet:3, eb_clarinet:-3, bass_clarinet:14};   // semitons: som -> escrita (Si♭: 2º maior acima; Lá: 3ª menor; Mi♭: 3ª menor abaixo; clarone: 9ª maior)
+  const INST_LABEL = {bb_clarinet:'Clarinete em Si♭', a_clarinet:'Clarinete em Lá', eb_clarinet:'Clarinete em Mi♭', bass_clarinet:'Clarone em Si♭', concert:'Clarinete'};
   const KEY_NAME = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b'];
   const KEY_LETTER = ['c','c','d','d','e','f','f','g','g','a','a','b'];
   const KEY_SHARP = [0,1,0,1,0,0,1,0,1,0,1,0];
@@ -1138,7 +1111,7 @@
 
   // fatia a melodia em segmentos onde o conjunto de notas soando não muda
   function scoreSegments(){
-    const total = contentMeas() * 32;                        // 1 passo = 2 fusas
+    const total = steps() * 2;                               // 1 passo = 2 fusas
     const items = notes.map(n => {
       let u = Math.round(n.s * 2), e = Math.round((n.s + n.d) * 2);
       u = clamp(u, 0, total - 1); e = clamp(e, u + 1, total);
@@ -1175,7 +1148,7 @@
     if(!VF) throw new Error('vexflow');
     const {Renderer, Stave, StaveNote, Voice, Formatter, Accidental, Beam, Dot, StaveTie, Barline} = VF;
     const semis = TRANSPOSE[opts.mode] || 0;
-    const nMeas = contentMeas();
+    const nMeas = steps() / 16;
 
     // 1) peças (notas/acordes/pausas) já divididas em valores de figura padrão
     const measures = Array.from({length:nMeas}, () => []);
@@ -1460,7 +1433,7 @@
         }catch(e){ line(false, ic.src + ' não encontrado'); }
       }
     }
-    line(samplesState === 'ready', 'Gravações reais de clarinete carregadas (' + (rawSamples ? rawSamples.length : 0) + ' notas)');
+    line(!!rawSamples, 'gravações do clarinete carregadas (' + (rawSamples ? rawSamples.length : 0) + ' de ' + SAMPLE_FILES.length + ')');
     try{
       const regs = await navigator.serviceWorker.getRegistrations();
       line(regs.length > 0, 'Service worker registrado');
@@ -1478,9 +1451,9 @@
   $('stop').onclick = stop;
   $('vol').oninput = () => { if(engine) engine.setVolume(+$('vol').value); };
   $('bpm').onchange = () => { if(playing){ const p = posStep; stopSound(); posStep = p; play(); } };
-  $('meas').onchange = () => { stop(); lenMeas = Math.max(contentMeas(), Math.min(MAX_MEAS, Math.max(1, Math.floor(+$('meas').value) || 4))); $('meas').value = lenMeas; build(); };
+  $('meas').onchange = () => { stop(); build(); };
   $('clear').onclick = () => { if(!notes.length || confirm('Apagar todas as notas?')){ notes = []; sel = null; renderNotes(); } };
-  $('exJson').onclick = () => download(safeName(projName) + '.clarinetcrafter.json', new Blob([JSON.stringify(snapshot(), null, 2)], {type:'application/json'}));
+  $('exJson').onclick = () => download(safeName(projName) + '.clarinetcraft.json', new Blob([JSON.stringify(snapshot(), null, 2)], {type:'application/json'}));
   $('imJson').onclick = () => $('file').click();
   $('file').onchange = async e => {
     const f = e.target.files[0]; if(!f) return;
@@ -1511,8 +1484,8 @@
       case 'Delete': case 'Backspace': removeNote(sel); break;
       case 'ArrowUp':    sel.p = clamp(sel.p + (e.shiftKey ? 12 : 1), LOW, HIGH); previewNote(sel.p, 0.3); renderNotes(); break;
       case 'ArrowDown':  sel.p = clamp(sel.p - (e.shiftKey ? 12 : 1), LOW, HIGH); previewNote(sel.p, 0.3); renderNotes(); break;
-      case 'ArrowLeft':  sel.s = Math.max(0, sel.s - (snapStep() || MIN_D)); renderNotes(); break;
-      case 'ArrowRight': sel.s = sel.s + (snapStep() || MIN_D); renderNotes(); break;
+      case 'ArrowLeft':  sel.s = clamp(sel.s - (snapStep() || MIN_D), 0, total - sel.d); renderNotes(); break;
+      case 'ArrowRight': sel.s = clamp(sel.s + (snapStep() || MIN_D), 0, total - sel.d); renderNotes(); break;
       case 'Escape': select(null); break;
       default: handled = false;
     }
@@ -1524,7 +1497,7 @@
   document.addEventListener('pointerdown', first);
 
   /* ---------- rascunho automático (volta de onde você parou) ---------- */
-  const AUTO_KEY = 'clarinetcrafter:auto';
+  const AUTO_KEY = 'clarinetcraft:auto';
   let lastAuto = '';
   try{
     const raw = localStorage.getItem(AUTO_KEY);
@@ -1537,23 +1510,21 @@
     }catch(e){}
   }, 1500);
 
-  $('wrap').addEventListener('scroll', autoExtend, {passive:true});
-  window.addEventListener('resize', autoExtend);
   build();
   updateName();
   prepareSamples();
-  $('wrap').scrollTop = (HIGH - 82) * ROWH;   // começa por volta do Lá5, onde ficam os registros médio e agudo
+  $('wrap').scrollTop = (HIGH - 79) * ROWH;   // começa por volta do Sol5, no registro brilhante do clarinete
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
   // na primeira visita, mostra a janela "Como usar" uma única vez
   try{
-    if(!localStorage.getItem('clarinetcrafter:help')){ localStorage.setItem('clarinetcrafter:help', '1'); openModal('mHelp'); }
+    if(!localStorage.getItem('clarinetcraft:help')){ localStorage.setItem('clarinetcraft:help', '1'); openModal('mHelp'); }
   }catch(e){}
 
   // ganchos para teste automatizado
-  window.__clarinete = {
-    setNotes(arr, measures, mode){ notes = arr; if(measures){ $('meas').value = measures; lenMeas = measures; } if(mode) setSel('scMode', mode); build(); },
-    buildScore, makePdf, steps, renderBuffer, ClarinetEngine
+  window.__clar = {
+    setNotes(arr, measures, mode){ notes = arr; if(measures) $('meas').value = measures; if(mode) setSel('scMode', mode); build(); },
+    buildScore, makePdf, steps, renderBuffer, ClarinetEngine, loadSamples
   };
 })();
 </script>
