@@ -208,7 +208,7 @@
       <button id="exMidi">MIDI</button>
       <button id="exWav">WAV</button>
       <button id="exJson">JSON</button>
-      <button id="imJson">Importar</button>
+      <button id="imJson" title="Importar MIDI (.mid) ou projeto (.json)">Importar</button>
     </div>
   </div>
 </div>
@@ -250,7 +250,7 @@
 </div>
 <div id="tip"></div>
 <div id="loading">Gerando arquivo…</div>
-<input id="file" type="file" accept="application/json,.json" hidden>
+<input id="file" type="file" hidden>
 
 <!-- Projetos: biblioteca do aplicativo + pasta do dispositivo -->
 <div class="modal" id="mProj" hidden>
@@ -1455,13 +1455,79 @@
   $('clear').onclick = () => { if(!notes.length || confirm('Apagar todas as notas?')){ notes = []; sel = null; renderNotes(); } };
   $('exJson').onclick = () => download(safeName(projName) + '.clarinetcraft.json', new Blob([JSON.stringify(snapshot(), null, 2)], {type:'application/json'}));
   $('imJson').onclick = () => $('file').click();
+  /* ---------- importar MIDI ---------- */
+  function parseMidi(buf){
+    const u = new Uint8Array(buf); let p = 0;
+    const str = n => { const t = String.fromCharCode(...u.subarray(p, p + n)); p += n; return t; };
+    const u16 = () => (u[p++] << 8) | u[p++];
+    const u32 = () => ((u[p++] << 24) | (u[p++] << 16) | (u[p++] << 8) | u[p++]) >>> 0;
+    if(str(4) !== 'MThd') throw new Error('não é MIDI');
+    const hl = u32(); u16(); const nTr = u16(), div = u16(); p = 8 + hl;
+    if(div & 0x8000) throw new Error('divisão SMPTE não suportada');
+    const raw = []; let mpq = 0;
+    for(let t = 0; t < nTr && p + 8 <= u.length; t++){
+      if(str(4) !== 'MTrk'){ break; }
+      const len = u32(), end = Math.min(u.length, p + len);
+      let tick = 0, run = 0; const on = new Map();
+      const vlq = () => { let v = 0, b; do{ b = u[p++]; v = (v << 7) | (b & 0x7f); }while((b & 0x80) && p < end); return v; };
+      while(p < end){
+        tick += vlq();
+        let st = u[p];
+        if(st < 0x80){ st = run; } else { p++; if(st < 0xf0) run = st; }
+        if(st === 0xff){
+          const type = u[p++], l = vlq();
+          if(type === 0x51 && l === 3 && !mpq) mpq = (u[p] << 16) | (u[p + 1] << 8) | u[p + 2];
+          p += l;
+        }else if(st === 0xf0 || st === 0xf7){ p += vlq(); }
+        else{
+          const hi = st & 0xf0, ch = st & 15;
+          const a = u[p++], b = (hi === 0xc0 || hi === 0xd0) ? 0 : u[p++];
+          if(hi === 0x90 && b > 0){
+            const k = ch + ':' + a; if(!on.has(k)) on.set(k, []); on.get(k).push(tick);
+          }else if(hi === 0x80 || (hi === 0x90 && b === 0)){
+            const k = ch + ':' + a, q = on.get(k);
+            if(q && q.length){ const t0 = q.shift(); if(ch !== 9) raw.push({p:a, t0, t1:tick}); }
+          }
+        }
+      }
+      on.forEach((q, k) => { const ch = +k.split(':')[0], pp = +k.split(':')[1]; if(ch !== 9) q.forEach(t0 => raw.push({p:pp, t0, t1:tick})); });
+      p = end;
+    }
+    if(!raw.length) throw new Error('sem notas');
+    const tps = div / 4;                                   // ticks por passo de 1/16
+    const q = v => Math.round(v * 4) / 4;                  // grade de 1/64
+    let out = raw.map(r => {
+      let pitch = r.p;
+      while(pitch > HIGH) pitch -= 12;                     // leva para dentro do alcance do clarinete
+      while(pitch < LOW) pitch += 12;
+      return {p:pitch, s:q(r.t0 / tps), d:Math.max(MIN_D, q((r.t1 - r.t0) / tps))};
+    });
+    const maxSteps = 64 * 16;
+    const cut = out.filter(n => n.s < maxSteps).length < out.length;
+    out = out.filter(n => n.s < maxSteps).map(n => ({p:n.p, s:n.s, d:Math.min(n.d, maxSteps - n.s)}));
+    const last = Math.max(...out.map(n => n.s + n.d));
+    return {
+      bpm: clamp(Math.round(60000000 / (mpq || 500000)), 30, 240),
+      measures: clamp(Math.ceil(last / 16), 1, 64),
+      notes: out, cut
+    };
+  }
   $('file').onchange = async e => {
     const f = e.target.files[0]; if(!f) return;
     try{
-      apply(JSON.parse(await f.text()));
-      current = null; updateName();
-      setStatus('Arquivo importado', true);
-    }catch(err){ setStatus('Arquivo inválido'); }
+      const buf = await f.arrayBuffer();
+      const head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+      if(String.fromCharCode(...head) === 'MThd'){
+        const m = parseMidi(buf);
+        apply({name:f.name.replace(/\.[^.]+$/, ''), bpm:m.bpm, measures:m.measures, notes:m.notes});
+        current = null; updateName();
+        setStatus(m.cut ? 'MIDI importado (cortado em 64 compassos)' : 'MIDI importado', true);
+      }else{
+        apply(JSON.parse(new TextDecoder().decode(buf)));
+        current = null; updateName();
+        setStatus('Arquivo importado', true);
+      }
+    }catch(err){ console.error(err); setStatus('Arquivo inválido (use .mid, .midi ou .json)'); }
     e.target.value = '';
   };
   $('exMidi').onclick = () => notes.length ? download(safeName(projName) + '.mid', midiBlob()) : setStatus('Adicione notas antes de exportar');
@@ -1524,7 +1590,7 @@
   // ganchos para teste automatizado
   window.__clar = {
     setNotes(arr, measures, mode){ notes = arr; if(measures) $('meas').value = measures; if(mode) setSel('scMode', mode); build(); },
-    buildScore, makePdf, steps, renderBuffer, ClarinetEngine, loadSamples
+    buildScore, makePdf, steps, renderBuffer, ClarinetEngine, loadSamples, getNotes: () => notes
   };
 })();
 </script>
