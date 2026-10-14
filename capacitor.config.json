@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.capuchowp.clarinetcrafter",
+  "appName": "Clarinetcraft",
+  "webDir": "www",
+  "backgroundColor": "#0b0e12",
+  "server": {
+    "androidScheme": "https"
+  }
+}

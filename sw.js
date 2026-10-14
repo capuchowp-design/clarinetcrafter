@@ -1,4 +1,4 @@
-const CACHE = 'clarinetcraft-v1';
+const CACHE = 'clarinetcraft-v2';
 const SAMPLES = ['D3','F3','As3','D4','F4','As4','D5','F5','As5','D6','Fs6'].flatMap(n => ['mp3','ogg'].map(e => './samples/clarinet/' + n + '.' + e));
 const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', ...SAMPLES];
 

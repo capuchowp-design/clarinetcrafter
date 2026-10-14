@@ -21,7 +21,7 @@
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
   body{height:100vh;height:100dvh;display:flex;flex-direction:column;background:radial-gradient(1200px 500px at 50% -10%,#18222d 0%,var(--bg) 60%)}
-  header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  header{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-right,0px)) 12px calc(16px + env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
   header svg{width:34px;height:34px;flex:none}
   h1{font-size:20px;margin:0;letter-spacing:.5px;color:var(--gold);font-weight:700}
   h1 small{display:block;font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1.5px;text-transform:uppercase}
@@ -121,7 +121,7 @@
   .paper svg{display:block;width:100%;height:auto}
   .msg{color:var(--text);padding:30px 10px;text-align:center;font-size:14px}
   @media (max-width:700px){
-    header{padding:8px 12px;gap:8px;flex-wrap:nowrap}
+    header{padding:calc(8px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 8px calc(12px + env(safe-area-inset-left,0px));gap:8px;flex-wrap:nowrap}
     header svg{width:28px;height:28px}
     h1{font-size:17px;white-space:nowrap}
     h1 small{display:none}
@@ -134,6 +134,7 @@
     main{padding:8px 8px 12px}
     .adv{gap:8px 10px}
   }
+  html.native .pwa-only{display:none!important}
 </style>
 </head>
 <body>
@@ -167,7 +168,7 @@
     <button id="score" class="gold" aria-label="Partitura em PDF">🎼 Partitura<span class="lbl"> (PDF)</span></button>
   </div>
   <div class="group">
-    <button id="installBtn" class="gold" hidden aria-label="Instalar aplicativo">📲<span class="lbl"> Instalar</span></button>
+    <button id="installBtn" class="gold pwa-only" hidden aria-label="Instalar aplicativo">📲<span class="lbl"> Instalar</span></button>
     <button id="adjBtn" title="Ajustes e exportação" aria-label="Ajustes">⚙<span class="lbl"> Ajustes</span></button>
     <button id="helpBtn" title="Como usar" aria-label="Como usar">❓<span class="lbl"> Ajuda</span></button>
   </div>
@@ -239,9 +240,10 @@
         <li><b>Teclado (computador):</b> <kbd>Espaço</kbd> toca e pausa. Com uma nota selecionada, <kbd>↑</kbd><kbd>↓</kbd> mudam o tom (<kbd>Shift</kbd> = oitava) e <kbd>←</kbd><kbd>→</kbd> movem no tempo. <kbd>Ctrl</kbd>+<kbd>S</kbd> salva.</li>
         <li><b>Salvar e exportar:</b> 📁 Projetos guarda na biblioteca ou numa pasta, 🎼 Partitura gera o PDF, e em ⚙ Ajustes ficam MIDI, WAV, JSON e Importar.</li>
         <li><b>Som:</b> gravações reais de um clarinete (biblioteca tonejs-instruments, licença CC-BY 3.0), sem sons sintéticos. Em ⚙ Ajustes, o <b>Vibrato</b> dá vida às notas longas. A grade mostra o <b>som real</b> (de Ré3 a Fá6); na partitura você escolhe se ela é escrita para clarinete em Si♭ (o mais comum), em Lá, em Mi♭, clarone ou em dó.</li>
-        <li><b>Instalar no celular:</b> no menu do navegador, escolha "Instalar aplicativo" ou "Adicionar à tela inicial".</li>
+        <li><b>Créditos:</b> gravações de clarinete da biblioteca tonejs-instruments (N. P. Brosowsky), licença Creative Commons CC BY 3.0 (creativecommons.org/licenses/by/3.0). Partitura desenhada com VexFlow (licença MIT).</li>
+        <li class="pwa-only"><b>Instalar no celular:</b> no menu do navegador, escolha "Instalar aplicativo" ou "Adicionar à tela inicial".</li>
       </ul>
-      <div class="sec" style="margin-top:16px">
+      <div class="sec pwa-only" style="margin-top:16px">
         <h3>Instalação</h3>
         <div class="rowline"><button id="chkBtn">Verificar instalação</button></div>
         <pre id="chkOut" class="fine" style="white-space:pre-wrap;margin:0"></pre>
@@ -826,12 +828,30 @@
     el.innerHTML = 'Projeto: <b></b>';
     el.lastChild.textContent = projName + (current ? '' : ' (não salvo)');
   }
-  function download(name, blob){
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = name;
+  // Salvar/exportar arquivos. No navegador usa o download normal; no app Android (Capacitor)
+  // grava o arquivo no cache e abre a folha de compartilhamento ("Salvar em Arquivos/Drive", WhatsApp etc.).
+  async function tbSaveFile(name, blob){
+    const C = window.Capacitor;
+    const plug = n => { try{ return (C && C.Plugins && C.Plugins[n]) || (C && typeof C.registerPlugin === 'function' && C.registerPlugin(n)) || null; }catch(e){ return null; } };
+    let native = false; try{ native = !!(C && ((typeof C.isNativePlatform === 'function' && C.isNativePlatform()) || (typeof C.getPlatform === 'function' && C.getPlatform() !== 'web'))); }catch(e){}
+    const FS = native ? plug('Filesystem') : null, SH = native ? plug('Share') : null;
+    if(FS && SH){
+      try{
+        const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(blob); });
+        const w = await FS.writeFile({path: name, data: b64, directory: 'CACHE'});
+        await SH.share({title: name, files: [w.uri], dialogTitle: 'Salvar ou enviar'});
+      }catch(e){
+        const m = String((e && e.message) || e || '');
+        if(!/cancel/i.test(m)) setStatus('Não foi possível salvar o arquivo');
+      }
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name;
     document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
+  function download(name, blob){ tbSaveFile(name, blob); }
   const safeName = s => (s || 'clarinetcraft').replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, ' ').trim().slice(0, 80) || 'clarinetcraft';
   const fmtDate = t => { try{ return new Date(t).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'}); }catch(e){ return ''; } };
 
@@ -1014,7 +1034,7 @@
     $('projNameIn').value = projName === 'Sem título' && !current ? '' : projName;
     openModal('mProj');
     $('folderSec').querySelector('#folderNote').textContent = FS_OK ? '' :
-      'Este navegador não permite escolher uma pasta (isso funciona no Chrome e no Edge). Use a biblioteca do aplicativo ou os botões JSON/Importar.';
+      'Escolher uma pasta não está disponível aqui. Use a biblioteca do aplicativo ou, em ⚙ Ajustes, os botões JSON e Importar.';
     $('pickFolder').disabled = !FS_OK; $('saveFolder').disabled = true;
     refreshLib();
     await loadStoredFolder();
@@ -1608,7 +1628,9 @@
   updateName();
   prepareSamples();
   $('wrap').scrollTop = (HIGH - 79) * ROWH;   // começa por volta do Sol5, no registro brilhante do clarinete
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  const IS_NATIVE = (() => { try{ const C = window.Capacitor; return !!(C && ((typeof C.isNativePlatform === 'function' && C.isNativePlatform()) || (typeof C.getPlatform === 'function' && C.getPlatform() !== 'web'))); }catch(e){ return false; } })();
+  if(IS_NATIVE) document.documentElement.classList.add('native');
+  if(!IS_NATIVE && 'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
   // na primeira visita, mostra a janela "Como usar" uma única vez
   try{
